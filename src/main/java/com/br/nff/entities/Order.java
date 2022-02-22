@@ -12,29 +12,34 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.br.nff.entities.enums.OrderStatus;
+
 @Entity
 @Table(name = "tb_order")
 public class Order implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private Instant moment;
-	
-	@ManyToOne 
+
+	private Integer orderStatus;
+
+	@ManyToOne
 	@JoinColumn(name = "client_id")
 	private Users client;
-	
+
 	public Order() {
-		
+
 	}
 
-	public Order(Long id, Instant moment, Users client) {
+	public Order(Long id, Instant moment, OrderStatus ordeStatus, Users client) {
 		super();
 		this.id = id;
 		this.moment = moment;
+		setOrdeStatus(ordeStatus);
 		this.client = client;
 	}
 
@@ -52,6 +57,16 @@ public class Order implements Serializable {
 
 	public void setMoment(Instant moment) {
 		this.moment = moment;
+	}
+
+	public OrderStatus getOrdeStatus() {
+		return OrderStatus.valueOf(orderStatus);
+	}
+
+	public void setOrdeStatus(OrderStatus ordeStatus) {
+		if(ordeStatus != null) {
+			this.orderStatus = ordeStatus.getCode();
+		}	
 	}
 
 	public Users getClient() {
@@ -78,7 +93,5 @@ public class Order implements Serializable {
 		Order other = (Order) obj;
 		return Objects.equals(id, other.id);
 	}
-	
-	
-	
+
 }
