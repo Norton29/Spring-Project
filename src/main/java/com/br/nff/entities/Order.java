@@ -2,7 +2,9 @@ package com.br.nff.entities;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.br.nff.entities.enums.OrderStatus;
@@ -23,9 +26,11 @@ public class Order implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	private Integer orderStatus;	
 	private Instant moment;
-
-	private Integer orderStatus;
+	
+	@OneToMany(mappedBy = "id.order")
+	private Set<OrderItem> items = new HashSet<>();
 
 	@ManyToOne
 	@JoinColumn(name = "client_id")
@@ -37,10 +42,20 @@ public class Order implements Serializable {
 
 	public Order(Long id, Instant moment, OrderStatus ordeStatus, Users client) {
 		super();
+		setOrdeStatus(ordeStatus);
 		this.id = id;
 		this.moment = moment;
-		setOrdeStatus(ordeStatus);
 		this.client = client;
+	}
+	
+	public OrderStatus getOrdeStatus() {
+		return OrderStatus.valueOf(orderStatus);
+	}
+
+	public void setOrdeStatus(OrderStatus ordeStatus) {
+		if(ordeStatus != null) {
+			this.orderStatus = ordeStatus.getCode();
+		}	
 	}
 
 	public Long getId() {
@@ -59,15 +74,7 @@ public class Order implements Serializable {
 		this.moment = moment;
 	}
 
-	public OrderStatus getOrdeStatus() {
-		return OrderStatus.valueOf(orderStatus);
-	}
-
-	public void setOrdeStatus(OrderStatus ordeStatus) {
-		if(ordeStatus != null) {
-			this.orderStatus = ordeStatus.getCode();
-		}	
-	}
+	
 
 	public Users getClient() {
 		return client;
@@ -75,6 +82,10 @@ public class Order implements Serializable {
 
 	public void setClient(Users client) {
 		this.client = client;
+	}
+	
+	public Set<OrderItem> getOrder(){
+		return items;
 	}
 
 	@Override
